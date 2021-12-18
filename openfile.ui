@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>831</width>
-    <height>610</height>
+    <width>827</width>
+    <height>615</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -20,10 +20,10 @@
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>0</x>
       <y>190</y>
-      <width>631</width>
-      <height>401</height>
+      <width>821</width>
+      <height>421</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -36,7 +36,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="openFileButton">
+   <widget class="QPushButton" name="openImgButton">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -49,7 +49,7 @@
      <string>Open File</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="saveFileButton">
+   <widget class="QPushButton" name="saveImgButton">
     <property name="geometry">
      <rect>
       <x>90</x>
@@ -62,7 +62,7 @@
      <string>Save File</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="blurImgButton">
     <property name="geometry">
      <rect>
       <x>180</x>
@@ -72,13 +72,13 @@
      </rect>
     </property>
     <property name="text">
-     <string>Blur/Deblur</string>
+     <string>Blur</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_4">
+   <widget class="QPushButton" name="grayscaleImgButton">
     <property name="geometry">
      <rect>
-      <x>280</x>
+      <x>360</x>
       <y>0</y>
       <width>91</width>
       <height>31</height>
@@ -88,10 +88,10 @@
      <string>Grayscale</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_5">
+   <widget class="QPushButton" name="cropImgButton">
     <property name="geometry">
      <rect>
-      <x>370</x>
+      <x>450</x>
       <y>0</y>
       <width>91</width>
       <height>31</height>
@@ -101,10 +101,10 @@
      <string>Crop</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_6">
+   <widget class="QPushButton" name="flipImgButton">
     <property name="geometry">
      <rect>
-      <x>460</x>
+      <x>540</x>
       <y>0</y>
       <width>91</width>
       <height>31</height>
@@ -114,10 +114,10 @@
      <string>Flip</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_7">
+   <widget class="QPushButton" name="mirrorImgButton">
     <property name="geometry">
      <rect>
-      <x>550</x>
+      <x>630</x>
       <y>0</y>
       <width>81</width>
       <height>31</height>
@@ -127,10 +127,10 @@
      <string>Mirror</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_8">
+   <widget class="QPushButton" name="rotateImgButton">
     <property name="geometry">
      <rect>
-      <x>630</x>
+      <x>710</x>
       <y>0</y>
       <width>91</width>
       <height>31</height>
@@ -140,11 +140,11 @@
      <string>Rotate</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_9">
+   <widget class="QPushButton" name="reversecolorImgButton">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>0</y>
+      <x>0</x>
+      <y>30</y>
       <width>111</width>
       <height>31</height>
      </rect>
@@ -153,12 +153,12 @@
      <string>Reverse Color</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_10">
+   <widget class="QPushButton" name="colorbalanceImgButton">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>110</x>
       <y>30</y>
-      <width>181</width>
+      <width>171</width>
       <height>31</height>
      </rect>
     </property>
@@ -166,12 +166,12 @@
      <string>Color Balance</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_11">
+   <widget class="QPushButton" name="brightnessImgButton">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>280</x>
       <y>30</y>
-      <width>101</width>
+      <width>91</width>
       <height>31</height>
      </rect>
     </property>
@@ -179,10 +179,10 @@
      <string> Brightness</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_12">
+   <widget class="QPushButton" name="contrastImgButton">
     <property name="geometry">
      <rect>
-      <x>330</x>
+      <x>370</x>
       <y>30</y>
       <width>91</width>
       <height>31</height>
@@ -192,10 +192,10 @@
      <string>Contrast</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_13">
+   <widget class="QPushButton" name="saturationImgButton">
     <property name="geometry">
      <rect>
-      <x>420</x>
+      <x>460</x>
       <y>30</y>
       <width>91</width>
       <height>31</height>
@@ -205,12 +205,12 @@
      <string>Saturation</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_14">
+   <widget class="QPushButton" name="noiseImgButton">
     <property name="geometry">
      <rect>
-      <x>510</x>
+      <x>550</x>
       <y>30</y>
-      <width>91</width>
+      <width>81</width>
       <height>31</height>
      </rect>
     </property>
@@ -218,10 +218,10 @@
      <string>Noise</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_15">
+   <widget class="QPushButton" name="detectedgeImgButton">
     <property name="geometry">
      <rect>
-      <x>600</x>
+      <x>630</x>
       <y>30</y>
       <width>171</width>
       <height>31</height>
@@ -229,6 +229,19 @@
     </property>
     <property name="text">
      <string>Detect Edges</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="deblurImgButton">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>0</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Deblur</string>
     </property>
    </widget>
   </widget>
