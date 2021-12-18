@@ -13,22 +13,28 @@ class UI(QMainWindow):
 
         uic.loadUi("openfile.ui", self)
 
-        self.button = self.findChild(QPushButton, 'pushButton')
+        self.openFileButton = self.findChild(QPushButton, 'openFileButton')
+        self.saveFileButton = self.findChild(QPushButton, 'saveFileButton')
         self.label = self.findChild(QLabel, 'label')
 
-        self.button.clicked.connect(self.openFileClick)
+        self.openFileButton.clicked.connect(self.openFileClick)
+        self.saveFileButton.clicked.connect(self.saveFileClick)
 
         self.show()
 
     def openFileClick(self):
-        fname = QFileDialog.getOpenFileName(self, "Open File", "", "All Files (*);;PNG (*.png);;JPG (*.jpg)")
-
-        if fname:
+        fname = QFileDialog.getOpenFileName(self, "Open File", "", "All Files(*);;PNG(*.png);;JPG(*.jpg)")
+        if fname[0] != '':
             self.image = cv2.imread(fname[0])
-            self.image = QtGui.QImage(self.image.data, self.image.shape[1], self.image.shape[0],
-                                      QtGui.QImage.Format_RGB888).rgbSwapped()
+            self.q_image = QtGui.QImage(self.image.data, self.image.shape[1], self.image.shape[0],
+                                        QtGui.QImage.Format_RGB888).rgbSwapped()
             self.pixmap = QPixmap(fname[0])
-            self.label.setPixmap(QtGui.QPixmap.fromImage(self.image))
+            self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
+
+    def saveFileClick(self):
+        dir_name = QFileDialog.getSaveFileName(self, "Save File", "", "All Files(*);;PNG(*.png);;JPG(*.jpg)")
+        if dir_name[0] != '':
+            cv2.imwrite(dir_name[0], self.image)
 
 
 app = QApplication(sys.argv)
