@@ -59,10 +59,12 @@ class Ui_MainWindow(QMainWindow):
         self.mirrorImgButton = QtWidgets.QPushButton(self.centralwidget)
         self.mirrorImgButton.setGeometry(QtCore.QRect(630, 0, 81, 31))
         self.mirrorImgButton.setObjectName("mirrorImgButton")
+        self.mirrorImgButton.clicked.connect(self.mirrorImgClick)
 
         self.rotateImgButton = QtWidgets.QPushButton(self.centralwidget)
         self.rotateImgButton.setGeometry(QtCore.QRect(710, 0, 91, 31))
         self.rotateImgButton.setObjectName("rotateImgButton")
+        self.rotateImgButton.clicked.connect(self.rotateImgClick)
 
         self.reversecolorImgButton = QtWidgets.QPushButton(self.centralwidget)
         self.reversecolorImgButton.setGeometry(QtCore.QRect(0, 30, 111, 31))
@@ -156,6 +158,18 @@ class Ui_MainWindow(QMainWindow):
         self.q_image = QtGui.QImage(self.image.data, self.image.shape[1], self.image.shape[0],
                                     QtGui.QImage.Format_RGB888).rgbSwapped()
         self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
+
+    def mirrorImgClick(self):
+            self.image = cv2.flip(self.image, 1)
+            self.q_image = QtGui.QImage(self.image.data, self.image.shape[1], self.image.shape[0],
+                                        QtGui.QImage.Format_RGB888).rgbSwapped()
+            self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
+
+    def rotateImgClick(self):
+                self.image = cv2.rotate(self.image, cv2.cv2.ROTATE_90_CLOCKWISE)
+                self.q_image = QtGui.QImage(self.image.data, self.image.shape[1], self.image.shape[0],
+                                            QtGui.QImage.Format_RGB888).rgbSwapped()
+                self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
 
 
 if __name__ == "__main__":
