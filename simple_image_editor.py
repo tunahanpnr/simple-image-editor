@@ -1,3 +1,5 @@
+import random
+
 import cv2
 import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -198,7 +200,7 @@ class Ui_MainWindow(QMainWindow):
     def cropImgClick(self):
         r = cv2.selectROI(self.edited_image_cv2)
         cv2.destroyAllWindows()
-        self.edited_image_cv2 = self.edited_image_cv2[int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])].copy()
+        self.edited_image_cv2 = self.edited_image_cv2[int(r[1]):int(r[1] + r[3]), int(r[0]):int(r[0] + r[2])].copy()
         self.showImage(self.edited_image_cv2, self.edited_image_label)
         # editted_image = QtGui.QImage(self.edited_image_cv2.data, self.edited_image_cv2.shape[1],
         #                              self.edited_image_cv2.shape[0],
@@ -258,14 +260,7 @@ class Ui_MainWindow(QMainWindow):
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def noiseImgClick(self):
-        row, col, channel = self.edited_image_cv2.shape
-        mean = 0
-        var = 0.1
-        sigma = var ** 0.5
-        gauss = np.random.normal(mean, sigma, (row, col, channel))
-        gauss = gauss.reshape(row, col, channel)
-        self.edited_image_cv2 = self.edited_image_cv2 + gauss
-        self.showImage(self.edited_image_cv2, self.edited_image_label)
+        self.sp_noise(0.01)
         # mean = 0.0  # some constant
         # std = 1.0  # some constant (standard deviation)
         # noisy_img = self.edited_image_cv2 + np.random.normal(mean, std, self.edited_image_cv2.shape)
@@ -317,6 +312,21 @@ class Ui_MainWindow(QMainWindow):
             gauss = gauss.reshape(row, col, ch)
             noisy = self.edited_image_cv2 + self.edited_image_cv2 * gauss
             return noisy
+
+    def sp_noise(self, prob):
+        output = np.zeros(self.edited_image_cv2.shape, np.uint8)
+        thres = 1 - prob
+        for i in range(self.edited_image_cv2.shape[0]):
+            for j in range(self.edited_image_cv2.shape[1]):
+                rdn = random.random()
+                if rdn < prob:
+                    output[i][j] = 0
+                elif rdn > thres:
+                    output[i][j] = 255
+                else:
+                    output[i][j] = self.edited_image_cv2[i][j]
+        self.edited_image_cv2 = output
+        self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def brightnessImgClick(self):  # partially wrong
         pil_img = self.cv2_to_pil(self.edited_image_cv2)
