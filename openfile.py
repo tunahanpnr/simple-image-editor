@@ -1,7 +1,11 @@
+import random
+
 import cv2
 import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QImage
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLabel, QFileDialog
+from qcrop.ui import QCrop
 
 
 class Ui_MainWindow(QMainWindow):
@@ -59,10 +63,12 @@ class Ui_MainWindow(QMainWindow):
         self.mirrorImgButton = QtWidgets.QPushButton(self.centralwidget)
         self.mirrorImgButton.setGeometry(QtCore.QRect(630, 0, 81, 31))
         self.mirrorImgButton.setObjectName("mirrorImgButton")
+        self.mirrorImgButton.clicked.connect(self.mirrorImgClick)
 
         self.rotateImgButton = QtWidgets.QPushButton(self.centralwidget)
         self.rotateImgButton.setGeometry(QtCore.QRect(710, 0, 91, 31))
         self.rotateImgButton.setObjectName("rotateImgButton")
+        self.rotateImgButton.clicked.connect(self.rotateImgClick)
 
         self.reversecolorImgButton = QtWidgets.QPushButton(self.centralwidget)
         self.reversecolorImgButton.setGeometry(QtCore.QRect(0, 30, 111, 31))
@@ -71,26 +77,32 @@ class Ui_MainWindow(QMainWindow):
         self.colorbalanceImgButton = QtWidgets.QPushButton(self.centralwidget)
         self.colorbalanceImgButton.setGeometry(QtCore.QRect(110, 30, 171, 31))
         self.colorbalanceImgButton.setObjectName("colorbalanceImgButton")
+        self.colorbalanceImgButton.clicked.connect(self.colorbalanceImgClick)
 
         self.brightnessImgButton = QtWidgets.QPushButton(self.centralwidget)
         self.brightnessImgButton.setGeometry(QtCore.QRect(280, 30, 91, 31))
         self.brightnessImgButton.setObjectName("brightnessImgButton")
+        self.brightnessImgButton.clicked.connect(self.brightnessImgClick)
 
         self.contrastImgButton = QtWidgets.QPushButton(self.centralwidget)
         self.contrastImgButton.setGeometry(QtCore.QRect(370, 30, 91, 31))
         self.contrastImgButton.setObjectName("contrastImgButton")
+        self.contrastImgButton.clicked.connect(self.contrastImgClick)
 
         self.saturationImgButton = QtWidgets.QPushButton(self.centralwidget)
         self.saturationImgButton.setGeometry(QtCore.QRect(460, 30, 91, 31))
         self.saturationImgButton.setObjectName("saturationImgButton")
+        self.saturationImgButton.clicked.connect(self.saturationImgClick)
 
         self.noiseImgButton = QtWidgets.QPushButton(self.centralwidget)
         self.noiseImgButton.setGeometry(QtCore.QRect(550, 30, 81, 31))
         self.noiseImgButton.setObjectName("noiseImgButton")
+        self.noiseImgButton.clicked.connect(self.noiseImgClick)
 
         self.detectedgeImgButton = QtWidgets.QPushButton(self.centralwidget)
         self.detectedgeImgButton.setGeometry(QtCore.QRect(630, 30, 171, 31))
         self.detectedgeImgButton.setObjectName("detectedgeImgButton")
+        self.detectedgeImgButton.clicked.connect(self.detectedgeImgClick)
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -155,6 +167,80 @@ class Ui_MainWindow(QMainWindow):
         self.image = cv2.flip(self.image, 0)
         self.q_image = QtGui.QImage(self.image.data, self.image.shape[1], self.image.shape[0],
                                     QtGui.QImage.Format_RGB888).rgbSwapped()
+        self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
+
+    def mirrorImgClick(self):
+        self.image = cv2.flip(self.image, 1)
+        self.q_image = QtGui.QImage(self.image.data, self.image.shape[1], self.image.shape[0],
+                                    QtGui.QImage.Format_RGB888).rgbSwapped()
+        self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
+
+    def rotateImgClick(self):
+        self.image = cv2.rotate(self.image, cv2.ROTATE_90_CLOCKWISE)
+        self.q_image = QtGui.QImage(self.image.data, self.image.shape[1], self.image.shape[0],
+                                    QtGui.QImage.Format_RGB888).rgbSwapped()
+        self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
+
+    def detectedgeImgClick(self):
+        grayscale = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        blurred_image = cv2.GaussianBlur(grayscale, (5, 5), 1)
+        self.image = cv2.Canny(blurred_image, threshold1=100, threshold2=100)
+        self.q_image = QImage(self.image.data, self.image.shape[1], self.image.shape[0],
+                              QImage.Format_RGB888).rgbSwapped()
+        self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
+
+    def brightnessImgClick(self):  # partially wrong
+        hls_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2HLS)
+        increase_value = 20
+        hls_image[:, :, 1] += increase_value
+        normal_image = cv2.cvtColor(hls_image, cv2.COLOR_HLS2BGR)
+        self.image = normal_image
+        self.q_image = QImage(self.image.data, self.image.shape[1], self.image.shape[0],
+                              QImage.Format_RGB888).rgbSwapped()
+        self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
+
+    def contrastImgClick(self):
+        lab_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2LAB)
+        l, a, b = cv2.split(lab_image)
+        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+        cl = clahe.apply(l)
+        merged = cv2.merge((cl, a, b))
+        self.image = cv2.cvtColor(merged, cv2.COLOR_LAB2BGR)
+        self.q_image = QImage(self.image.data, self.image.shape[1], self.image.shape[0],
+                              QImage.Format_RGB888).rgbSwapped()
+        self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
+
+    def saturationImgClick(self):
+        hsv_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
+        increase_value = 20
+        hsv_image[:, :, 1] += increase_value
+        normal_image = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+        self.image = normal_image
+        self.q_image = QImage(self.image.data, self.image.shape[1], self.image.shape[0],
+                              QImage.Format_RGB888).rgbSwapped()
+        self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
+
+    def noiseImgClick(self):
+        row, col, channel = self.image
+        mean = 0
+        var = 0.1
+        sigma = var ** 0.5
+        gauss = np.random.normal(mean, sigma, (row, col, channel))
+        gauss = gauss.reshape(row, col, channel)
+        self.image = self.image + gauss
+        self.q_image = QImage(self.image.data, self.image.shape[1], self.image.shape[0],
+                              QImage.Format_RGB888).rgbSwapped()
+        self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
+
+    def colorbalanceImgClick(self):
+        value = 20
+        B, G, R = self.image[:, :, 0], self.image[:, :, 1], self.image[:, :, 2]
+        R += value
+        G += value
+        B += value
+        self.image = cv2.merge((B, G, R))
+        self.q_image = QImage(self.image.data, self.image.shape[1], self.image.shape[0],
+                              QImage.Format_RGB888).rgbSwapped()
         self.label.setPixmap(QtGui.QPixmap.fromImage(self.q_image))
 
 
