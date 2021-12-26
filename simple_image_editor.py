@@ -370,6 +370,10 @@ class Ui_MainWindow(QMainWindow):
         self.showItemsHandler('Detect Edge Image', False, False)
 
     def saturationImgClick(self):
+        if self.isGrayScaled:
+            self.showItemsHandler('You can not do saturation on grayscaled image.', False, False)
+            return
+
         self.toolType = 'saturation'
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSlider.setMinimum(-99)
@@ -390,6 +394,10 @@ class Ui_MainWindow(QMainWindow):
         label.setPixmap(QtGui.QPixmap.fromImage(edited_image))
 
     def colorBalanceImgClick(self):
+        if self.isGrayScaled:
+            self.showItemsHandler('You can not do color balance on grayscaled image.', False, False)
+            return
+
         self.toolType = 'colorbalance'
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSliderRValue.setMinimum(-99)
