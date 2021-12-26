@@ -5,11 +5,12 @@ import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PIL import Image, ImageEnhance
 from PyQt5.QtWidgets import QFileDialog, QMainWindow
-from qcrop.ui import QCrop
 
 
 class Ui_MainWindow(QMainWindow):
+
     def setupUi(self, MainWindow):
+        self.toolType = ''
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1015, 703)
         MainWindow.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
@@ -31,6 +32,26 @@ class Ui_MainWindow(QMainWindow):
         self.edited_image_label.setSizePolicy(sizePolicy)
         self.edited_image_label.setObjectName("edited_image_label")
         self.edited_image_label.setScaledContents(True)
+
+        self.horizontalSlider = QtWidgets.QSlider(self.centralwidget)
+        self.horizontalSlider.setEnabled(False)
+        self.horizontalSlider.hide()
+        self.horizontalSlider.setGeometry(QtCore.QRect(370, 210, 261, 41))
+        font = QtGui.QFont()
+        font.setKerning(True)
+        self.horizontalSlider.setFont(font)
+        self.horizontalSlider.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.horizontalSlider.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.horizontalSlider.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
+        self.horizontalSlider.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.horizontalSlider.setAutoFillBackground(False)
+        self.horizontalSlider.setMinimum(-99)
+        self.horizontalSlider.setSliderPosition(0)
+        self.horizontalSlider.setTracking(True)
+        self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSlider.setTickPosition(QtWidgets.QSlider.NoTicks)
+        self.horizontalSlider.setTickInterval(0)
+        self.horizontalSlider.setObjectName("horizontalSlider")
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
@@ -109,6 +130,8 @@ class Ui_MainWindow(QMainWindow):
         self.actionDetect_Edges.setObjectName("actionDetect_Edges")
         self.actionDetect_Edges.triggered.connect(self.detectEdgeImgClick)
 
+        self.horizontalSlider.valueChanged.connect(lambda: self.sliderHandler(self.toolType))
+
         self.menuFile.addAction(self.actionOpen_Image)
         self.menuFile.addAction(self.actionSave_Image)
         self.menuTools.addAction(self.actionBlur)
@@ -160,6 +183,7 @@ class Ui_MainWindow(QMainWindow):
         if fname[0] != '':
             self.original_image_cv2 = cv2.imread(fname[0])
             self.edited_image_cv2 = cv2.imread(fname[0])
+            self.edited_image_copy_cv2 = cv2.imread(fname[0])
             self.showImage(self.original_image_cv2, self.original_image_label)
 
     def saveImgClick(self):
@@ -168,17 +192,37 @@ class Ui_MainWindow(QMainWindow):
             cv2.imwrite(dir_name[0], self.edited_image_cv2)
 
     def blurImgClick(self):
-        self.edited_image_cv2 = cv2.blur(self.edited_image_cv2, (3, 3))
+        self.toolType = 'blur'
+        self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
+        self.horizontalSlider.setMinimum(0)
+        self.horizontalSlider.setSliderPosition(0)
+        self.horizontalSlider.setEnabled(True)
+        self.horizontalSlider.show()
+
+    def blurImg(self, val):
+        self.edited_image_cv2 = cv2.blur(self.edited_image_copy_cv2, (val, val))
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def deblurImgClick(self):
-        filter = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
-        self.edited_image_cv2 = cv2.filter2D(self.edited_image_cv2, -1, filter)
+        self.toolType = 'deblur'
+        self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
+        self.horizontalSlider.setMinimum(0)
+        self.horizontalSlider.setSliderPosition(0)
+        self.horizontalSlider.setEnabled(True)
+        self.horizontalSlider.show()
+
+    def deblurImg(self, val):
+        pil_img = self.cv2_to_pil(self.edited_image_copy_cv2)
+        enhancer = ImageEnhance.Sharpness(pil_img)
+        factor = 1 + val  
+        im_output = enhancer.enhance(factor)
+        self.edited_image_cv2 = self.pil_to_cv2(im_output)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def grayscaleImgClick(self):
         self.isGrayScaled = True
-        self.edited_image_cv2 = cv2.cvtColor(self.edited_image_cv2, cv2.COLOR_BGR2GRAY)
+        self.edited_image_cv2 = cv2.cvtColor(self.edited_image_cv2, cv2.cv2.COLOR_BGR2GRAY)
+        self.edited_image_cv2 = cv2.cvtColor(self.edited_image_cv2, cv2.cv2.COLOR_RGB2BGR)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def flipImgClick(self):
@@ -230,24 +274,24 @@ class Ui_MainWindow(QMainWindow):
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def saturationImgClick(self):
-        hsv_image = cv2.cvtColor(self.edited_image_cv2, cv2.COLOR_BGR2HSV)
-        increase_value = 20
-        hsv_image[:, :, 1] += increase_value
-        normal_image = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
-        self.edited_image_cv2 = normal_image
+        self.toolType = 'saturation'
+        self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
+        self.horizontalSlider.setMinimum(-99)
+        self.horizontalSlider.setSliderPosition(0)
+        self.horizontalSlider.setEnabled(True)
+        self.horizontalSlider.show()
+
+    def saturationImg(self, val):
+        pil_img = self.cv2_to_pil(self.edited_image_copy_cv2)
+        enhancer = ImageEnhance.Color(pil_img)
+        factor = 1 + val
+        im_output = enhancer.enhance(factor)
+        self.edited_image_cv2 = self.pil_to_cv2(im_output)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def showImage(self, img, label):
-        if len(img.shape) == 3:
-            edited_image = QtGui.QImage(img.data, img.shape[1],
-                                        img.shape[0],
-                                        img.shape[1] * img.shape[2],
-                                        QtGui.QImage.Format_RGB888).rgbSwapped()
-        else:
-            edited_image = QtGui.QImage(img.data, img.shape[1],
-                                        img.shape[0],
-                                        QtGui.QImage.Format_Grayscale8).rgbSwapped()
-
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        edited_image = QtGui.QImage(img, img.shape[1], img.shape[0], img.strides[0], QtGui.QImage.Format_RGB888)
         label.setPixmap(QtGui.QPixmap.fromImage(edited_image))
 
     def colorBalanceImgClick(self):
@@ -260,17 +304,27 @@ class Ui_MainWindow(QMainWindow):
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def noiseImgClick(self):
-        self.sp_noise(0.01)
-        # mean = 0.0  # some constant
-        # std = 1.0  # some constant (standard deviation)
-        # noisy_img = self.edited_image_cv2 + np.random.normal(mean, std, self.edited_image_cv2.shape)
-        # self.edited_image_cv2 = np.clip(noisy_img, 0, 255)
-        # self.showImage(self.edited_image_cv2, self.edited_image_label)
+        self.toolType = 'noise'
+        self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
+        self.horizontalSlider.setMinimum(0)
+        self.horizontalSlider.setSliderPosition(0)
+        self.horizontalSlider.setEnabled(True)
+        self.horizontalSlider.show()
 
-    def qimg2cv(self, q_img):
-        q_img.save('temp.png', 'png')
-        mat = cv2.imread('temp.png')
-        return mat
+    def noiseImg(self, prob):
+        output = np.zeros(self.edited_image_copy_cv2.shape, np.uint8)
+        thres = 1 - prob
+        for i in range(self.edited_image_copy_cv2.shape[0]):
+            for j in range(self.edited_image_copy_cv2.shape[1]):
+                rdn = random.random()
+                if rdn < prob:
+                    output[i][j] = 0
+                elif rdn > thres:
+                    output[i][j] = 255
+                else:
+                    output[i][j] = self.edited_image_copy_cv2[i][j]
+        self.edited_image_cv2 = output
+        self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def noisy(self, noise_typ):
         if noise_typ == "gauss":
@@ -313,25 +367,18 @@ class Ui_MainWindow(QMainWindow):
             noisy = self.edited_image_cv2 + self.edited_image_cv2 * gauss
             return noisy
 
-    def sp_noise(self, prob):
-        output = np.zeros(self.edited_image_cv2.shape, np.uint8)
-        thres = 1 - prob
-        for i in range(self.edited_image_cv2.shape[0]):
-            for j in range(self.edited_image_cv2.shape[1]):
-                rdn = random.random()
-                if rdn < prob:
-                    output[i][j] = 0
-                elif rdn > thres:
-                    output[i][j] = 255
-                else:
-                    output[i][j] = self.edited_image_cv2[i][j]
-        self.edited_image_cv2 = output
-        self.showImage(self.edited_image_cv2, self.edited_image_label)
+    def brightnessImgClick(self):
+        self.toolType = 'brightness'
+        self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
+        self.horizontalSlider.setMinimum(-99)
+        self.horizontalSlider.setSliderPosition(0)
+        self.horizontalSlider.setEnabled(True)
+        self.horizontalSlider.show()
 
-    def brightnessImgClick(self):  # partially wrong
-        pil_img = self.cv2_to_pil(self.edited_image_cv2)
+    def brightnessImg(self, sliderVal):
+        pil_img = self.cv2_to_pil(self.edited_image_copy_cv2)
         enhancer = ImageEnhance.Brightness(pil_img)
-        factor = 1.2  # brightens the image
+        factor = 1 + sliderVal  
         im_output = enhancer.enhance(factor)
         self.edited_image_cv2 = self.pil_to_cv2(im_output)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
@@ -344,9 +391,17 @@ class Ui_MainWindow(QMainWindow):
         # self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def contrastImgClick(self):
-        pil_img = self.cv2_to_pil(self.edited_image_cv2)
+        self.toolType = 'contrast'
+        self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
+        self.horizontalSlider.setMinimum(-99)
+        self.horizontalSlider.setSliderPosition(0)
+        self.horizontalSlider.setEnabled(True)
+        self.horizontalSlider.show()
+
+    def contrastImg(self, val):
+        pil_img = self.cv2_to_pil(self.edited_image_copy_cv2)
         enhancer = ImageEnhance.Contrast(pil_img)
-        factor = 1.2  # brightens the image
+        factor = 1 + val
         im_output = enhancer.enhance(factor)
         self.edited_image_cv2 = self.pil_to_cv2(im_output)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
@@ -367,6 +422,37 @@ class Ui_MainWindow(QMainWindow):
     def pil_to_cv2(self, img):
         cv2_img = np.asarray(img)
         return cv2.cvtColor(cv2_img, cv2.COLOR_RGB2BGR)
+
+    def sliderHandler(self, toolType):
+        val = self.horizontalSlider.value()
+        if toolType == 'blur':
+            val = (val - (val % 10)) // 10
+            if val != 0:
+                val = val + 1 if (val > 3) else 3
+                print(val)
+                self.blurImg(val)
+
+        elif toolType == 'deblur':
+            val /= 5
+            self.deblurImg(val)
+
+        elif toolType == 'saturation':
+            val /= 50
+            self.saturationImg(val)
+
+        elif toolType == 'noise':
+            val /= 1000
+            self.noiseImg(val)
+
+        elif toolType == 'contrast':
+            val /= 50
+            self.contrastImg(val)
+
+        elif toolType == 'brightness':
+            val /= 100
+            self.brightnessImg(val)
+
+        return val
 
 
 if __name__ == "__main__":
