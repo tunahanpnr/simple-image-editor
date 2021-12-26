@@ -34,7 +34,6 @@ class Ui_MainWindow(QMainWindow):
         self.edited_image_label.setScaledContents(True)
 
         self.horizontalSlider = QtWidgets.QSlider(self.centralwidget)
-        self.horizontalSlider.setEnabled(False)
         self.horizontalSlider.hide()
         self.horizontalSlider.setGeometry(QtCore.QRect(370, 210, 261, 41))
         font = QtGui.QFont()
@@ -52,6 +51,88 @@ class Ui_MainWindow(QMainWindow):
         self.horizontalSlider.setTickPosition(QtWidgets.QSlider.NoTicks)
         self.horizontalSlider.setTickInterval(0)
         self.horizontalSlider.setObjectName("horizontalSlider")
+
+        self.horizontalSliderRValue = QtWidgets.QSlider(self.centralwidget)
+        self.horizontalSliderRValue.hide()
+        self.horizontalSliderRValue.setGeometry(QtCore.QRect(350, 110, 261, 41))
+        font = QtGui.QFont()
+        font.setKerning(True)
+        self.horizontalSliderRValue.setFont(font)
+        self.horizontalSliderRValue.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.horizontalSliderRValue.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.horizontalSliderRValue.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
+        self.horizontalSliderRValue.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.horizontalSliderRValue.setAutoFillBackground(False)
+        self.horizontalSliderRValue.setMinimum(-99)
+        self.horizontalSliderRValue.setSliderPosition(0)
+        self.horizontalSliderRValue.setTracking(True)
+        self.horizontalSliderRValue.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSliderRValue.setTickPosition(QtWidgets.QSlider.NoTicks)
+        self.horizontalSliderRValue.setTickInterval(0)
+        self.horizontalSliderRValue.setObjectName("horizontalSliderRValue")
+        self.horizontalSliderGValue = QtWidgets.QSlider(self.centralwidget)
+        self.horizontalSliderGValue.hide()
+        self.horizontalSliderGValue.setGeometry(QtCore.QRect(350, 160, 261, 41))
+        font = QtGui.QFont()
+        font.setKerning(True)
+        self.horizontalSliderGValue.setFont(font)
+        self.horizontalSliderGValue.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.horizontalSliderGValue.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.horizontalSliderGValue.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
+        self.horizontalSliderGValue.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.horizontalSliderGValue.setAutoFillBackground(False)
+        self.horizontalSliderGValue.setMinimum(-99)
+        self.horizontalSliderGValue.setSliderPosition(0)
+        self.horizontalSliderGValue.setTracking(True)
+        self.horizontalSliderGValue.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSliderGValue.setTickPosition(QtWidgets.QSlider.NoTicks)
+        self.horizontalSliderGValue.setTickInterval(0)
+        self.horizontalSliderGValue.setObjectName("horizontalSliderGValue")
+        self.horizontalSliderBValue = QtWidgets.QSlider(self.centralwidget)
+        self.horizontalSliderBValue.hide()
+        self.horizontalSliderBValue.setGeometry(QtCore.QRect(350, 210, 261, 41))
+        font = QtGui.QFont()
+        font.setKerning(True)
+        self.horizontalSliderBValue.setFont(font)
+        self.horizontalSliderBValue.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.horizontalSliderBValue.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.horizontalSliderBValue.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
+        self.horizontalSliderBValue.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.horizontalSliderBValue.setAutoFillBackground(False)
+        self.horizontalSliderBValue.setMinimum(-99)
+        self.horizontalSliderBValue.setSliderPosition(0)
+        self.horizontalSliderBValue.setTracking(True)
+        self.horizontalSliderBValue.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSliderBValue.setTickPosition(QtWidgets.QSlider.NoTicks)
+        self.horizontalSliderBValue.setTickInterval(0)
+        self.horizontalSliderBValue.setObjectName("horizontalSliderBValue")
+
+        self.lineFunction = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineFunction.setGeometry(QtCore.QRect(200, 40, 651, 41))
+        self.lineFunction.show()
+        sizePolicyLine = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Fixed)
+        sizePolicyLine.setHorizontalStretch(0)
+        sizePolicyLine.setVerticalStretch(0)
+        sizePolicyLine.setHeightForWidth(self.lineFunction.sizePolicy().hasHeightForWidth())
+        self.lineFunction.setSizePolicy(sizePolicyLine)
+        self.lineFunction.setAlignment(QtCore.Qt.AlignCenter)
+        self.lineFunction.setReadOnly(True)
+        self.lineFunction.setObjectName("lineFunction")
+
+        self.lineRValue = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineRValue.setGeometry(QtCore.QRect(270, 120, 61, 21))
+        self.lineRValue.setObjectName("lineRValue")
+        self.lineRValue.hide()
+
+        self.lineGValue = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineGValue.setGeometry(QtCore.QRect(270, 170, 61, 21))
+        self.lineGValue.setObjectName("lineGValue")
+        self.lineGValue.hide()
+
+        self.lineBValue = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineBValue.setGeometry(QtCore.QRect(270, 220, 61, 21))
+        self.lineBValue.setObjectName("lineBValue")
+        self.lineBValue.hide()
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
@@ -131,6 +212,9 @@ class Ui_MainWindow(QMainWindow):
         self.actionDetect_Edges.triggered.connect(self.detectEdgeImgClick)
 
         self.horizontalSlider.valueChanged.connect(lambda: self.sliderHandler(self.toolType))
+        self.horizontalSliderRValue.valueChanged.connect(lambda: self.sliderHandler('colorbalance_R'))
+        self.horizontalSliderGValue.valueChanged.connect(lambda: self.sliderHandler('colorbalance_G'))
+        self.horizontalSliderBValue.valueChanged.connect(lambda: self.sliderHandler('colorbalance_B'))
 
         self.menuFile.addAction(self.actionOpen_Image)
         self.menuFile.addAction(self.actionSave_Image)
@@ -177,6 +261,10 @@ class Ui_MainWindow(QMainWindow):
         self.actionSaturation.setText(_translate("MainWindow", "Saturation"))
         self.actionNoise.setText(_translate("MainWindow", "Noise"))
         self.actionDetect_Edges.setText(_translate("MainWindow", "Detect Edges"))
+        self.lineFunction.setText(_translate("MainWindow", "Image Editor"))
+        self.lineRValue.setText(_translate("MainWindow", "R Value:"))
+        self.lineGValue.setText(_translate("MainWindow", "G Value:"))
+        self.lineBValue.setText(_translate("MainWindow", "B Value:"))
 
     def openImgClick(self):
         fname = QFileDialog.getOpenFileName(self, "Open File", "", "All Files(*);;PNG(*.png);;JPG(*.jpg)")
@@ -185,19 +273,21 @@ class Ui_MainWindow(QMainWindow):
             self.edited_image_cv2 = cv2.imread(fname[0])
             self.edited_image_copy_cv2 = cv2.imread(fname[0])
             self.showImage(self.original_image_cv2, self.original_image_label)
+            self.showItemsHandler('Image opened. You can start to edit your image now.', False, False)
+            self.isGrayScaled = False
 
     def saveImgClick(self):
         dir_name = QFileDialog.getSaveFileName(self, "Save File", "", "All Files(*);;PNG(*.png);;JPG(*.jpg)")
         if dir_name[0] != '':
             cv2.imwrite(dir_name[0], self.edited_image_cv2)
+            self.showItemsHandler('Your edited image saved successfully', False, False)
 
     def blurImgClick(self):
         self.toolType = 'blur'
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSlider.setMinimum(0)
         self.horizontalSlider.setSliderPosition(0)
-        self.horizontalSlider.setEnabled(True)
-        self.horizontalSlider.show()
+        self.showItemsHandler('Blur Image', True, False)
 
     def blurImg(self, val):
         self.edited_image_cv2 = cv2.blur(self.edited_image_copy_cv2, (val, val))
@@ -208,13 +298,12 @@ class Ui_MainWindow(QMainWindow):
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSlider.setMinimum(0)
         self.horizontalSlider.setSliderPosition(0)
-        self.horizontalSlider.setEnabled(True)
-        self.horizontalSlider.show()
+        self.showItemsHandler('Deblur Image', True, False)
 
     def deblurImg(self, val):
         pil_img = self.cv2_to_pil(self.edited_image_copy_cv2)
         enhancer = ImageEnhance.Sharpness(pil_img)
-        factor = 1 + val  
+        factor = 1 + val
         im_output = enhancer.enhance(factor)
         self.edited_image_cv2 = self.pil_to_cv2(im_output)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
@@ -224,28 +313,36 @@ class Ui_MainWindow(QMainWindow):
         self.edited_image_cv2 = cv2.cvtColor(self.edited_image_cv2, cv2.cv2.COLOR_BGR2GRAY)
         self.edited_image_cv2 = cv2.cvtColor(self.edited_image_cv2, cv2.cv2.COLOR_RGB2BGR)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
+        self.isGrayScaled = True
+        self.showItemsHandler('Grayscaled Image', False, False)
 
     def flipImgClick(self):
         self.edited_image_cv2 = cv2.flip(self.edited_image_cv2, 0)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
+        self.showItemsHandler('Flipped Image', False, False)
 
     def mirrorImgClick(self):
         self.edited_image_cv2 = cv2.flip(self.edited_image_cv2, 1)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
+        self.showItemsHandler('Mirrored Image', False, False)
 
     def rotateImgClick(self):
         self.edited_image_cv2 = cv2.rotate(self.edited_image_cv2, cv2.ROTATE_90_CLOCKWISE)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
+        self.showItemsHandler('Rotated Image', False, False)
 
     def reversecolorImgClick(self):
         self.edited_image_cv2 = cv2.bitwise_not(self.edited_image_cv2)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
+        self.showItemsHandler('Reverse Color Image', False, False)
 
     def cropImgClick(self):
         r = cv2.selectROI(self.edited_image_cv2)
         cv2.destroyAllWindows()
         self.edited_image_cv2 = self.edited_image_cv2[int(r[1]):int(r[1] + r[3]), int(r[0]):int(r[0] + r[2])].copy()
         self.showImage(self.edited_image_cv2, self.edited_image_label)
+        self.showItemsHandler('Cropped Image', False, False)
+
         # editted_image = QtGui.QImage(self.edited_image_cv2.data, self.edited_image_cv2.shape[1],
         #                              self.edited_image_cv2.shape[0],
         #                              QtGui.QImage.Format_RGB888).rgbSwapped()
@@ -262,24 +359,22 @@ class Ui_MainWindow(QMainWindow):
         # else crop_tool.image == original_image
 
     def reset(self):
-        edited_image = QtGui.QImage(self.original_image_cv2.data, self.original_image_cv2.shape[1],
-                                    self.original_image_cv2.shape[0],
-                                    QtGui.QImage.Format_RGB888).rgbSwapped()
-        self.edited_image_label.setPixmap(QtGui.QPixmap.fromImage(edited_image))
+        self.edited_image_cv2 = self.original_image_cv2
+        self.showItemsHandler('Reset Image', False, False)
 
     def detectEdgeImgClick(self):
         grayscale = cv2.cvtColor(self.edited_image_cv2, cv2.COLOR_BGR2GRAY)
         blurred_image = cv2.GaussianBlur(grayscale, (5, 5), 1)
         self.edited_image_cv2 = cv2.Canny(blurred_image, threshold1=100, threshold2=100)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
+        self.showItemsHandler('Detect Edge Image', False, False)
 
     def saturationImgClick(self):
         self.toolType = 'saturation'
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSlider.setMinimum(-99)
         self.horizontalSlider.setSliderPosition(0)
-        self.horizontalSlider.setEnabled(True)
-        self.horizontalSlider.show()
+        self.showItemsHandler('Adjust Saturation Image', True, False)
 
     def saturationImg(self, val):
         pil_img = self.cv2_to_pil(self.edited_image_copy_cv2)
@@ -295,12 +390,27 @@ class Ui_MainWindow(QMainWindow):
         label.setPixmap(QtGui.QPixmap.fromImage(edited_image))
 
     def colorBalanceImgClick(self):
-        value = 20
-        B, G, R = self.edited_image_cv2[:, :, 0], self.edited_image_cv2[:, :, 1], self.edited_image_cv2[:, :, 2]
-        R += value
-        G += value
-        B += value
-        self.edited_image_cv2 = cv2.merge((B, G, R))
+        self.toolType = 'colorbalance'
+        self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
+        self.horizontalSliderRValue.setMinimum(-99)
+        self.horizontalSliderRValue.setSliderPosition(0)
+
+        self.horizontalSliderGValue.setMinimum(-99)
+        self.horizontalSliderGValue.setSliderPosition(0)
+
+        self.horizontalSliderBValue.setMinimum(-99)
+        self.horizontalSliderBValue.setSliderPosition(0)
+
+        self.showItemsHandler('Color Balance Image', True, True)
+
+    def colorBalanceImg(self, val, ch):
+        if ch == 'R':
+            self.edited_image_cv2[:, :, 2] = cv2.add(self.edited_image_copy_cv2[:, :, 2], val)
+        elif ch == 'G':
+            self.edited_image_cv2[:, :, 1] = cv2.add(self.edited_image_copy_cv2[:, :, 1], val)
+        elif ch == 'B':
+            self.edited_image_cv2[:, :, 0] = cv2.add(self.edited_image_copy_cv2[:, :, 0], val)
+
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def noiseImgClick(self):
@@ -308,8 +418,7 @@ class Ui_MainWindow(QMainWindow):
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSlider.setMinimum(0)
         self.horizontalSlider.setSliderPosition(0)
-        self.horizontalSlider.setEnabled(True)
-        self.horizontalSlider.show()
+        self.showItemsHandler('Adjust Noise Image', True, False)
 
     def noiseImg(self, prob):
         output = np.zeros(self.edited_image_copy_cv2.shape, np.uint8)
@@ -372,13 +481,12 @@ class Ui_MainWindow(QMainWindow):
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSlider.setMinimum(-99)
         self.horizontalSlider.setSliderPosition(0)
-        self.horizontalSlider.setEnabled(True)
-        self.horizontalSlider.show()
+        self.showItemsHandler('Adjust Brightness Image', True, False)
 
     def brightnessImg(self, sliderVal):
         pil_img = self.cv2_to_pil(self.edited_image_copy_cv2)
         enhancer = ImageEnhance.Brightness(pil_img)
-        factor = 1 + sliderVal  
+        factor = 1 + sliderVal
         im_output = enhancer.enhance(factor)
         self.edited_image_cv2 = self.pil_to_cv2(im_output)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
@@ -395,8 +503,7 @@ class Ui_MainWindow(QMainWindow):
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSlider.setMinimum(-99)
         self.horizontalSlider.setSliderPosition(0)
-        self.horizontalSlider.setEnabled(True)
-        self.horizontalSlider.show()
+        self.showItemsHandler('Adjust Contrast Image', True, False)
 
     def contrastImg(self, val):
         pil_img = self.cv2_to_pil(self.edited_image_copy_cv2)
@@ -452,7 +559,48 @@ class Ui_MainWindow(QMainWindow):
             val /= 100
             self.brightnessImg(val)
 
+        elif 'colorbalance' in toolType:
+            ch = toolType[-1]
+            val = 0
+            if ch == 'R':
+                val = self.horizontalSliderRValue.value()
+            elif ch == 'G':
+                val = self.horizontalSliderGValue.value()
+            elif ch == 'B':
+                val = self.horizontalSliderBValue.value()
+
+            self.colorBalanceImg(val, ch)
+
         return val
+
+    def showItemsHandler(self, funcType, withSlider, isColorBalance):
+        self.lineFunction.setText(funcType)
+        if withSlider:
+            self.horizontalSlider.show()
+            self.horizontalSliderRValue.hide()
+            self.horizontalSliderGValue.hide()
+            self.horizontalSliderBValue.hide()
+            self.lineRValue.hide()
+            self.lineGValue.hide()
+            self.lineBValue.hide()
+            if isColorBalance:
+                self.horizontalSlider.hide()
+                self.horizontalSliderRValue.show()
+                self.horizontalSliderGValue.show()
+                self.horizontalSliderBValue.show()
+                self.lineRValue.show()
+                self.lineGValue.show()
+                self.lineBValue.show()
+        else:
+            self.horizontalSlider.hide()
+            self.horizontalSliderRValue.hide()
+            self.horizontalSliderGValue.hide()
+            self.horizontalSliderBValue.hide()
+            self.lineRValue.hide()
+            self.lineGValue.hide()
+            self.lineBValue.hide()
+
+        pass
 
 
 if __name__ == "__main__":
