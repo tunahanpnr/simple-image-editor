@@ -1,5 +1,4 @@
 import random
-
 import cv2
 import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -8,9 +7,14 @@ from PyQt5.QtWidgets import QFileDialog, QMainWindow
 
 
 class Ui_MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.toolType = ''
+        self.original_image_cv2 = None
+        self.edited_image_cv2 = None
+        self.edited_image_copy_cv2 = None
 
     def setupUi(self, MainWindow):
-        self.toolType = ''
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1015, 703)
         MainWindow.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
@@ -211,6 +215,10 @@ class Ui_MainWindow(QMainWindow):
         self.actionDetect_Edges.setObjectName("actionDetect_Edges")
         self.actionDetect_Edges.triggered.connect(self.detectEdgeImgClick)
 
+        self.reset = QtWidgets.QAction(MainWindow)
+        self.reset.setObjectName("reset")
+        self.reset.triggered.connect(self.resetImgClick)
+
         self.horizontalSlider.valueChanged.connect(lambda: self.sliderHandler(self.toolType))
         self.horizontalSliderRValue.valueChanged.connect(lambda: self.sliderHandler('colorbalance_R'))
         self.horizontalSliderGValue.valueChanged.connect(lambda: self.sliderHandler('colorbalance_G'))
@@ -232,6 +240,7 @@ class Ui_MainWindow(QMainWindow):
         self.menuTools.addAction(self.actionSaturation)
         self.menuTools.addAction(self.actionNoise)
         self.menuTools.addAction(self.actionDetect_Edges)
+        self.menuTools.addAction(self.reset)
         self.menuBar.addAction(self.menuFile.menuAction())
         self.menuBar.addAction(self.menuTools.menuAction())
 
@@ -261,6 +270,7 @@ class Ui_MainWindow(QMainWindow):
         self.actionSaturation.setText(_translate("MainWindow", "Saturation"))
         self.actionNoise.setText(_translate("MainWindow", "Noise"))
         self.actionDetect_Edges.setText(_translate("MainWindow", "Detect Edges"))
+        self.reset.setText(_translate("MainWindow", "Reset"))
         self.lineFunction.setText(_translate("MainWindow", "Image Editor"))
         self.lineRValue.setText(_translate("MainWindow", "R Value:"))
         self.lineGValue.setText(_translate("MainWindow", "G Value:"))
@@ -277,12 +287,19 @@ class Ui_MainWindow(QMainWindow):
             self.isGrayScaled = False
 
     def saveImgClick(self):
+        if not self.checkInit():
+            return
         dir_name = QFileDialog.getSaveFileName(self, "Save File", "", "All Files(*);;PNG(*.png);;JPG(*.jpg)")
         if dir_name[0] != '':
-            cv2.imwrite(dir_name[0], self.edited_image_cv2)
-            self.showItemsHandler('Your edited image saved successfully', False, False)
+            fileName = dir_name[0]
+            if not (('.png' in fileName) or ('.jpg' in fileName) or ('.jpeg' in fileName)):
+                fileName = fileName + '.png'
+            cv2.imwrite(fileName, self.edited_image_cv2)
+            self.showItemsHandler(f'Your edited image saved successfully to {fileName}', False, False)
 
     def blurImgClick(self):
+        if not self.checkInit():
+            return
         self.toolType = 'blur'
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSlider.setMinimum(0)
@@ -294,6 +311,9 @@ class Ui_MainWindow(QMainWindow):
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def deblurImgClick(self):
+        if not self.checkInit():
+            return
+
         self.toolType = 'deblur'
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSlider.setMinimum(0)
@@ -309,6 +329,9 @@ class Ui_MainWindow(QMainWindow):
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def grayscaleImgClick(self):
+        if not self.checkInit():
+            return
+
         self.isGrayScaled = True
         self.edited_image_cv2 = cv2.cvtColor(self.edited_image_cv2, cv2.cv2.COLOR_BGR2GRAY)
         self.edited_image_cv2 = cv2.cvtColor(self.edited_image_cv2, cv2.cv2.COLOR_RGB2BGR)
@@ -317,52 +340,59 @@ class Ui_MainWindow(QMainWindow):
         self.showItemsHandler('Grayscaled Image', False, False)
 
     def flipImgClick(self):
+        if not self.checkInit():
+            return
+
         self.edited_image_cv2 = cv2.flip(self.edited_image_cv2, 0)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
         self.showItemsHandler('Flipped Image', False, False)
 
     def mirrorImgClick(self):
+        if not self.checkInit():
+            return
+
         self.edited_image_cv2 = cv2.flip(self.edited_image_cv2, 1)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
         self.showItemsHandler('Mirrored Image', False, False)
 
     def rotateImgClick(self):
+        if not self.checkInit():
+            return
+
         self.edited_image_cv2 = cv2.rotate(self.edited_image_cv2, cv2.ROTATE_90_CLOCKWISE)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
         self.showItemsHandler('Rotated Image', False, False)
 
     def reversecolorImgClick(self):
+        if not self.checkInit():
+            return
+
         self.edited_image_cv2 = cv2.bitwise_not(self.edited_image_cv2)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
         self.showItemsHandler('Reverse Color Image', False, False)
 
     def cropImgClick(self):
+        if not self.checkInit():
+            return
+
         r = cv2.selectROI(self.edited_image_cv2)
         cv2.destroyAllWindows()
         self.edited_image_cv2 = self.edited_image_cv2[int(r[1]):int(r[1] + r[3]), int(r[0]):int(r[0] + r[2])].copy()
         self.showImage(self.edited_image_cv2, self.edited_image_label)
         self.showItemsHandler('Cropped Image', False, False)
 
-        # editted_image = QtGui.QImage(self.edited_image_cv2.data, self.edited_image_cv2.shape[1],
-        #                              self.edited_image_cv2.shape[0],
-        #                              QtGui.QImage.Format_RGB888).rgbSwapped()
-        #
-        # editted_image = QtGui.QPixmap.fromImage(editted_image)
-        # crop_tool = QCrop(editted_image)
-        # status = crop_tool.exec()
-        #
-        # if status == 1:
-        #     cropped_image = crop_tool.image
-        #     self.edited_image_cv2 = self.qimg2cv(cropped_image)
-        #     self.showImage(self.edited_image_cv2, self.edited_image_label)
+    def resetImgClick(self):
+        if not self.checkInit():
+            return
 
-        # else crop_tool.image == original_image
-
-    def reset(self):
-        self.edited_image_cv2 = self.original_image_cv2
+        self.edited_image_cv2 = self.original_image_cv2.copy()
+        self.showImage(self.edited_image_cv2, self.edited_image_label)
         self.showItemsHandler('Reset Image', False, False)
 
     def detectEdgeImgClick(self):
+        if not self.checkInit():
+            return
+
         grayscale = cv2.cvtColor(self.edited_image_cv2, cv2.COLOR_BGR2GRAY)
         blurred_image = cv2.GaussianBlur(grayscale, (5, 5), 1)
         self.edited_image_cv2 = cv2.Canny(blurred_image, threshold1=100, threshold2=100)
@@ -370,6 +400,9 @@ class Ui_MainWindow(QMainWindow):
         self.showItemsHandler('Detect Edge Image', False, False)
 
     def saturationImgClick(self):
+        if not self.checkInit():
+            return
+
         if self.isGrayScaled:
             self.showItemsHandler('You can not do saturation on grayscaled image.', False, False)
             return
@@ -394,6 +427,9 @@ class Ui_MainWindow(QMainWindow):
         label.setPixmap(QtGui.QPixmap.fromImage(edited_image))
 
     def colorBalanceImgClick(self):
+        if not self.checkInit():
+            return
+
         if self.isGrayScaled:
             self.showItemsHandler('You can not do color balance on grayscaled image.', False, False)
             return
@@ -422,6 +458,9 @@ class Ui_MainWindow(QMainWindow):
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def noiseImgClick(self):
+        if not self.checkInit():
+            return
+
         self.toolType = 'noise'
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSlider.setMinimum(0)
@@ -443,48 +482,10 @@ class Ui_MainWindow(QMainWindow):
         self.edited_image_cv2 = output
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
-    def noisy(self, noise_typ):
-        if noise_typ == "gauss":
-            row, col, ch = self.edited_image_cv2.shape
-            mean = 0
-            var = 0.1
-            sigma = var ** 0.5
-            gauss = np.random.normal(mean, sigma, (row, col, ch))
-            gauss = gauss.reshape(row, col, ch)
-            noisy = self.edited_image_cv2 + gauss
-            return noisy
-        elif noise_typ == "s&p":
-            row, col, ch = self.edited_image_cv2.shape
-            s_vs_p = 0.5
-            amount = 0.004
-            out = np.copy(self.edited_image_cv2)
-            # Salt mode
-            num_salt = np.ceil(amount * self.edited_image_cv2.size * s_vs_p)
-            coords = [np.random.randint(0, i - 1, int(num_salt))
-                      for i in self.edited_image_cv2.shape]
-            out[coords] = 1
-
-            # Pepper mode
-            num_pepper = np.ceil(amount * self.edited_image_cv2.size * (1. - s_vs_p))
-            coords = [np.random.randint(0, i - 1, int(num_pepper))
-                      for i in self.edited_image_cv2.shape]
-            out[coords] = 0
-            return out
-
-        elif noise_typ == "poisson":
-            vals = len(np.unique(self.edited_image_cv2))
-            vals = 2 ** np.ceil(np.log2(vals))
-            noisy = np.random.poisson(self.edited_image_cv2 * vals) / float(vals)
-            return noisy
-
-        elif noise_typ == "speckle":
-            row, col, ch = self.edited_image_cv2.shape
-            gauss = np.random.randn(row, col, ch)
-            gauss = gauss.reshape(row, col, ch)
-            noisy = self.edited_image_cv2 + self.edited_image_cv2 * gauss
-            return noisy
-
     def brightnessImgClick(self):
+        if not self.checkInit():
+            return
+
         self.toolType = 'brightness'
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSlider.setMinimum(-99)
@@ -499,14 +500,10 @@ class Ui_MainWindow(QMainWindow):
         self.edited_image_cv2 = self.pil_to_cv2(im_output)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
 
-        # hls_image = cv2.cvtColor(self.edited_image_cv2, cv2.COLOR_BGR2HLS)
-        # increase_value = 20
-        # hls_image[:, :, 1] += increase_value
-        # normal_image = cv2.cvtColor(hls_image, cv2.COLOR_HLS2BGR)
-        # self.edited_image_cv2 = normal_image
-        # self.showImage(self.edited_image_cv2, self.edited_image_label)
-
     def contrastImgClick(self):
+        if not self.checkInit():
+            return
+
         self.toolType = 'contrast'
         self.edited_image_copy_cv2 = self.edited_image_cv2.copy()
         self.horizontalSlider.setMinimum(-99)
@@ -520,14 +517,6 @@ class Ui_MainWindow(QMainWindow):
         im_output = enhancer.enhance(factor)
         self.edited_image_cv2 = self.pil_to_cv2(im_output)
         self.showImage(self.edited_image_cv2, self.edited_image_label)
-
-        # lab_image = cv2.cvtColor(self.edited_image_cv2, cv2.COLOR_BGR2LAB)
-        # l, a, b = cv2.split(lab_image)
-        # clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
-        # cl = clahe.apply(l)
-        # merged = cv2.merge((cl, a, b))
-        # self.edited_image_cv2 = cv2.cvtColor(merged, cv2.COLOR_LAB2BGR)
-        # self.showImage(self.edited_image_cv2, self.edited_image_label)
 
     def cv2_to_pil(self, img):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -544,7 +533,6 @@ class Ui_MainWindow(QMainWindow):
             val = (val - (val % 10)) // 10
             if val != 0:
                 val = val + 1 if (val > 3) else 3
-                print(val)
                 self.blurImg(val)
 
         elif toolType == 'deblur':
@@ -609,6 +597,12 @@ class Ui_MainWindow(QMainWindow):
             self.lineBValue.hide()
 
         pass
+
+    def checkInit(self):
+        if self.original_image_cv2 is None:
+            self.lineFunction.setText('You must load an image before making operations!')
+            return False
+        return True
 
 
 if __name__ == "__main__":
